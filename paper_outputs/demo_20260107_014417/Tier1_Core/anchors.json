@@ -1,0 +1,120 @@
+{
+  "main": {
+    "ok": true,
+    "psi_hat": "[0.]",
+    "U": "[[1.e-12]]",
+    "p": "[1.]",
+    "Q": {
+      "names": [
+        "did",
+        "x1"
+      ],
+      "transform": "log1p",
+      "winsor_p": null,
+      "uFE": 1,
+      "tFE": 1,
+      "control_L": 1,
+      "pretrend_max_abs_t": 0.0
+    },
+    "msg": "",
+    "spec": {
+      "m": "DID",
+      "p": {
+        "transform": "log1p",
+        "winsor_p": null
+      },
+      "s": {
+        "drop_last_k": 0
+      },
+      "e": {
+        "estimator": "OLS",
+        "uFE": 1,
+        "tFE": 1,
+        "control_L": 1
+      },
+      "i": {
+        "cluster": "unit",
+        "psi_index": 0
+      }
+    }
+  },
+  "cons": {
+    "ok": true,
+    "psi_hat": "[0.]",
+    "U": "[[1.e-12]]",
+    "p": "[1.]",
+    "Q": {
+      "names": [
+        "did",
+        "x1"
+      ],
+      "transform": "log1p",
+      "winsor_p": 0.01,
+      "uFE": 1,
+      "tFE": 1,
+      "control_L": 1,
+      "pretrend_max_abs_t": 0.0
+    },
+    "msg": "",
+    "spec": {
+      "m": "DID",
+      "p": {
+        "transform": "log1p",
+        "winsor_p": 0.01
+      },
+      "s": {
+        "drop_last_k": 0
+      },
+      "e": {
+        "estimator": "OLS",
+        "uFE": 1,
+        "tFE": 1,
+        "control_L": 1
+      },
+      "i": {
+        "cluster": "unit",
+        "psi_index": 0
+      }
+    }
+  },
+  "alt": {
+    "ok": true,
+    "psi_hat": "[0.]",
+    "U": "[[1.e-12]]",
+    "p": "[1.]",
+    "Q": {
+      "names": [
+        "did",
+        "x1",
+        "x2"
+      ],
+      "transform": "log1p",
+      "winsor_p": null,
+      "uFE": 1,
+      "tFE": 1,
+      "control_L": 2,
+      "pretrend_max_abs_t": 0.0
+    },
+    "msg": "",
+    "spec": {
+      "m": "DID",
+      "p": {
+        "transform": "log1p",
+        "winsor_p": null
+      },
+      "s": {
+        "drop_last_k": 0
+      },
+      "e": {
+        "estimator": "OLS",
+        "uFE": 1,
+        "tFE": 1,
+        "control_L": 2
+      },
+      "i": {
+        "cluster": "unit",
+        "psi_index": 0
+      }
+    }
+  }
+}

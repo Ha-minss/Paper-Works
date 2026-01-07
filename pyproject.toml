@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "stabilitycheck"
+version = "1.1.1"
+description = "Universal stability diagnostics for multiverse/econometric designs (Stage1/2/2.5)."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+  "numpy",
+  "pandas",
+  "scipy",
+  "matplotlib",
+  "scikit-learn",
+]
+license = {text="MIT"}

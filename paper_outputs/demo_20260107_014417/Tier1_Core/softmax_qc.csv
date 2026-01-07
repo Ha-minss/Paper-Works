@@ -1,0 +1,4 @@
+K,lambda,Neff,converged,rel_err,iters,max_g
+1,1.0,4.0,True,0.0,0,0.9
+2,1.0,4.0,True,0.0,0,0.9
+4,1.0,4.0,True,0.0,0,0.9

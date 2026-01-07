@@ -1,0 +1,2 @@
+tier,K,S_obs,critical_value,p_value_mc,alpha,B_used,decision,null_mode
+Tier2_Contested,10,1.3453624047047428,1.3453624047056163,0.3902439024390244,0.05,40,PASS,bootstrap

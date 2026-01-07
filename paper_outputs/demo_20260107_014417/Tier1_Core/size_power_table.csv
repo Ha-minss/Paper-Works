@@ -1,0 +1,4 @@
+scenario,alpha,rejection_rate,B,R,n_designs,K
+Stable null (size),0.05,0.0,40,6,4,4
+Local violation (power),0.05,0.5,40,6,4,4
+Regime shift (power),0.05,0.5,40,6,4,4

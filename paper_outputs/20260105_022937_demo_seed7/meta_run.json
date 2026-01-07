@@ -1,0 +1,12 @@
+{
+  "exp_id": "20260105_022937_demo_seed7",
+  "dataset": "dataset",
+  "timestamp_utc": "20260105_022937",
+  "package_version": "1.1.1",
+  "seed": 7,
+  "tiers": [
+    "Tier1_Core",
+    "Tier2_Contested",
+    "Tier3_WiderStress"
+  ]
+}

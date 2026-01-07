@@ -1,0 +1,32 @@
+# Output tree example
+
+```text
+paper_outputs/
+  20260105_0030_demo_seed7/
+    meta_run.json
+    config_snapshot.json
+    Stage1_test_report.csv
+    Stage1_null_hist.png
+    size_power_table.csv
+    all_tiers_summary.csv
+    Tier1_Core/
+      design_table.csv
+      tier_summary.csv
+      Kcurve.csv
+      Kcurve.png
+      wcurve.csv
+      wcurve.png
+      softmax_qc.csv
+      split_summary.csv
+      Kcurve_split.csv
+      Kcurve_split.png
+      weights_train_topshare.csv
+      LargeD_sampling_plan.json
+      LargeD_tightening.csv
+      LargeD_tightening.png
+      coverage.json
+    Tier2_Contested/
+      ...
+    Tier3_WiderStress/
+      ...
+```

@@ -1,0 +1,2 @@
+tier,K,S_obs,critical_value,p_value_mc,alpha,B_used,decision,null_mode
+Tier3_WiderStress,24,1.3453624047040755,1.3453624047048462,0.5121951219512195,0.05,40,PASS,bootstrap

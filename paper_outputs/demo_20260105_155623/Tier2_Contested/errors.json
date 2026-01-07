@@ -1,0 +1,3 @@
+{
+  "design_table": "AttributeError: 'SchemaConfig' object has no attribute 'make_designs_for_tier'"
+}

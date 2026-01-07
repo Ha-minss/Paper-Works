@@ -1,0 +1,2 @@
+tier,K,S_obs,critical_value,p_value_mc,alpha,B_used,decision,reason
+Tier1_Core,1,,,,0.05,0,SKIP,too few finite g

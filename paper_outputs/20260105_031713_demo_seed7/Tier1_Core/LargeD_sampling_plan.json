@@ -1,0 +1,10 @@
+{
+  "method": "exact",
+  "threshold": 2000,
+  "M0": 4,
+  "M1": 3,
+  "top_frac": 0.1,
+  "sweep": 128,
+  "skipped": true,
+  "reason": "|D| below threshold (exact run)"
+}

@@ -1,0 +1,2 @@
+tier,K,S_obs,critical_value,p_value_mc,alpha,B_used,decision,null_mode
+Tier1_Core,4,0.9,0.9,1.0,0.05,40,FAIL,bootstrap
