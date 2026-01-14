@@ -16,3 +16,6 @@ dependencies = [
   "scikit-learn",
 ]
 license = {text="MIT"}
+[tool.setuptools.packages.find]
+include = ["stabilitycheck*"]
+exclude = ["paper_outputs*"]
