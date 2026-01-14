@@ -45,7 +45,7 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
     p.add_argument("--size_power_R", type=int, default=50, help="Number of scenarios for size/power")
 
     p.add_argument("--out", type=str, default="paper_outputs", help="Output root directory")
-    p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--seed", type=int, default=7)
 
     return p.parse_args(argv)
 
@@ -308,7 +308,7 @@ def run_paper_pipeline(args: argparse.Namespace) -> str:
                 if g_ok.size >= 3:
                     # stage1 test at rule-K
                     K_rule = min(int(g_ok.size), max(cfg.k_min, int(np.ceil(cfg.rho * g_ok.size))))
-                    test = mc_stage1_test(g_ok, K_rule, alpha=0.05, B=cfg.null_B, rng=np.random.default_rng(cfg.seed))
+                    test = mc_stage1_test(g_ok,K_rule,alpha=float(cfg.alpha_test),B=int(cfg.null_B),rng=np.random.default_rng(cfg.seed),)
 
                     # softmax QC grid
                     qc_rows = []
@@ -318,12 +318,12 @@ def run_paper_pipeline(args: argparse.Namespace) -> str:
                     softmax_qc_df = pd.DataFrame(qc_rows)
 
                     sp = size_and_power_table(
-                        g_ok,
-                        K_rule,
-                        alpha=0.05,
-                        B=cfg.size_power_B,
-                        R=cfg.size_power_R,
-                        rng=np.random.default_rng(cfg.seed + 13),
+                                g_ok,
+                                K_rule,
+                                alpha=float(cfg.alpha_test),
+                                B=int(cfg.size_power_B),
+                                R=int(cfg.size_power_R),
+                                rng=np.random.default_rng(cfg.seed + 13),
                     )
 
                     bundle = {
@@ -334,7 +334,7 @@ def run_paper_pipeline(args: argparse.Namespace) -> str:
                                 "S_obs": float(test.get("S_obs", np.nan)),
                                 "critical_value": float(test.get("critical_value", np.nan)),
                                 "p_value_mc": float(test.get("p_value_mc", np.nan)),
-                                "alpha": float(test.get("alpha", 0.05)),
+                                "alpha": float(test.get("alpha", cfg.alpha_test)),
                                 "B_used": int(test.get("B_used", cfg.null_B)),
                                 "decision": str(test.get("decision", "NA")),
                                 "null_mode": str(test.get("null_mode", "mc")),
