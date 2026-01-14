@@ -18,7 +18,7 @@ class EngineConfig:
     exp_id: Optional[str] = None
     dataset: str = "demo"
     tier_names: Sequence[str] = ("Tier1_Core", "Tier2_Contested", "Tier3_WiderStress")
-    seed: int = 7
+    seed: int = 0
 
     anchor_main: Optional[DesignSpec] = None
     anchor_cons: Optional[DesignSpec] = None
