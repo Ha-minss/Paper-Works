@@ -40,9 +40,9 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
     p.add_argument("--assumption", action="store_true", help="Compute δ-knob assumption curves")
 
     # Speed knobs (defaults intentionally small for quick sanity runs)
-    p.add_argument("--null_B", type=int, default=40, help="MC null draws for Stage1 test")
-    p.add_argument("--size_power_B", type=int, default=40, help="MC draws per scenario for size/power")
-    p.add_argument("--size_power_R", type=int, default=6, help="Number of scenarios for size/power")
+    p.add_argument("--null_B", type=int, default=2000, help="MC null draws for Stage1 test")
+    p.add_argument("--size_power_B", type=int, default=400, help="MC draws per scenario for size/power")
+    p.add_argument("--size_power_R", type=int, default=50, help="Number of scenarios for size/power")
 
     p.add_argument("--out", type=str, default="paper_outputs", help="Output root directory")
     p.add_argument("--seed", type=int, default=0)
