@@ -38,7 +38,7 @@ class EngineConfig:
 
     k_min: int = 10
     rho: float = 0.05
-    k_grid_base: Sequence[int] = (1,2,5,10,20,50,100)
+    k_grid_base: Sequence[int] = (1,2,5,10,20,50,100,200,500)
 
     do_stage1_test: bool = True
     null_B: int = 200
@@ -53,10 +53,10 @@ class EngineConfig:
     block_splits: int = 3
 
     do_stage25: bool = True
-    rf_trees: int = 400
-    rf_boot: int = 200
-    pdp_grid: int = 12
-    ice_n: int = 60
+    rf_trees: int = 600
+    rf_boot: int = 500
+    pdp_grid: int = 20
+    ice_n: int = 200
 
     do_largeD_sampling: bool = False
     largeD_threshold: int = 2000
