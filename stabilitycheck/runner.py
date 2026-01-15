@@ -22,6 +22,8 @@ from .report import ensure_dir, save_csv_file, save_json_file
 from .sampling import largeD_tighten
 from .softmax import stage1_score
 from .testification import mc_stage1_test, size_and_power_table
+from .testification import run_stage1_testification
+from .nulls import permute_unit_treat
 
 
 def _tb1(ex: BaseException) -> str:
@@ -87,8 +89,8 @@ def save_testification_bundle(bundle: Dict[str, Any], exp_root: str, tier_dir: s
     df_report = bundle.get("stage1_test_report_df")
     if df_report is None or not isinstance(df_report, pd.DataFrame):
         df_report = pd.DataFrame()
-    save_csv_file(os.path.join(exp_root, "Stage1_test_report.csv"), df_report)
-    save_csv_file(os.path.join(tier_dir, "Stage1_test_report.csv"), df_report)
+        save_csv_file(os.path.join(exp_root, f"Stage1_test_report__{os.path.basename(tier_dir)}.csv"), df_report)
+        save_csv_file(os.path.join(tier_dir, "Stage1_test_report.csv"), df_report)
 
     # Stage1 null hist
     null_scores = bundle.get("stage1_null_scores")
@@ -208,7 +210,7 @@ def run_paper_pipeline(args: argparse.Namespace) -> str:
 
     if args.demo:
         # Intentionally smaller than the paper defaults so the DoD runs fast.
-        df = simulate_panel(seed=args.seed, N_units=30, T_periods=36)
+        df = simulate_panel(N_units=30, T_periods=72, seed=int(args.seed))
         dataset = "demo"
     else:
         raise RuntimeError("Non-demo datasets are not wired in this build.")
@@ -308,38 +310,81 @@ def run_paper_pipeline(args: argparse.Namespace) -> str:
                 if g_ok.size >= 3:
                     # stage1 test at rule-K
                     K_rule = min(int(g_ok.size), max(cfg.k_min, int(np.ceil(cfg.rho * g_ok.size))))
-                    test = mc_stage1_test(g_ok,K_rule,alpha=float(cfg.alpha_test),B=int(cfg.null_B),rng=np.random.default_rng(cfg.seed),)
 
-                    # softmax QC grid
+                    # ---- NEW: df-null testification (permute treat) ----
+                    def score_fn(dff: pd.DataFrame) -> float:
+                        # null df에서도 설계들을 다시 실행해서 g를 다시 계산해야 "진짜 null"이 됨
+                        Dt_b = compute_design_table(cfg, schema, registry, df=dff, tier_name=tier)
+                        anchors_b = compute_anchors(cfg, df=dff, adapter_registry=registry, schema=schema, tier_name=tier)
+                        g_b = compute_g_scalar(cfg, Dt_b, anchors_b)
+                        g_b = g_b[np.asarray(np.isfinite(g_b), dtype=bool)]
+                        if g_b.size < 3:
+                            return float("nan")
+                        return float(stage1_score(g_b, K_rule)["S_wc"])
+
+                    def null_gen(dff: pd.DataFrame, rng: np.random.Generator) -> pd.DataFrame:
+                        # DID 기본 null: unit 단위로 treat를 섞어서 신호를 깨기
+                        return permute_unit_treat(dff, rng)
+
+                    tres = run_stage1_testification(
+                        df,
+                        score_fn=score_fn,
+                        null_generator=null_gen,
+                        B=int(cfg.null_B),
+                        alpha=float(cfg.alpha_test),
+                        seed=int(cfg.seed),
+                        null_mode="permute_treat",
+                    )
+
+                    test = {
+                        "S_obs": tres.score_obs,
+                        "critical_value": tres.critical_value,
+                        "p_value_mc": tres.p_value_mc,
+                        "alpha": tres.alpha,
+                        "B_used": tres.B_used,
+                        "decision": tres.decision,
+                        "null_mode": tres.null_mode,
+                        "null_scores": tres.null_scores,
+                    }
+
+                    # ---- softmax QC grid (lambda/Neff는 NaN 처리) ----
                     qc_rows = []
                     for K in K_grid:
-                        # mc_stage1_test already calls solve_lambda; but we store minimal
-                        qc_rows.append({"K": int(K), "lambda": float(test.get("lambda", np.nan)), "Neff": float(test.get("Neff", np.nan)), "converged": bool(test.get("converged", False)), "rel_err": float(test.get("rel_err", np.nan)), "iters": int(test.get("iters", 0)), "max_g": float(np.nanmax(g_ok))})
+                        sK = stage1_score(g_ok, int(K))
+                        qc_rows.append({
+                            "K": int(K),
+                            "S_wc": float(sK.get("S_wc", np.nan)),
+                            "lambda": np.nan,
+                            "Neff": np.nan,
+                            "converged": True,
+                            "rel_err": np.nan,
+                            "iters": 0,
+                            "max_g": float(np.nanmax(g_ok)),
+                        })
                     softmax_qc_df = pd.DataFrame(qc_rows)
 
+                    # NOTE: 아래 size/power는 아직 g-bootstrap 기반일 수 있음(논문용이면 추후 df-null로 바꾸는 게 정석)
                     sp = size_and_power_table(
-                                g_ok,
-                                K_rule,
-                                alpha=float(cfg.alpha_test),
-                                B=int(cfg.size_power_B),
-                                R=int(cfg.size_power_R),
-                                rng=np.random.default_rng(cfg.seed + 13),
+                        g_ok,
+                        K_rule,
+                        alpha=float(cfg.alpha_test),
+                        B=int(cfg.size_power_B),
+                        R=int(cfg.size_power_R),
+                        rng=np.random.default_rng(cfg.seed + 13),
                     )
 
                     bundle = {
-                        "stage1_test_report_df": pd.DataFrame([
-                            {
-                                "tier": tier,
-                                "K": int(K_rule),
-                                "S_obs": float(test.get("S_obs", np.nan)),
-                                "critical_value": float(test.get("critical_value", np.nan)),
-                                "p_value_mc": float(test.get("p_value_mc", np.nan)),
-                                "alpha": float(test.get("alpha", cfg.alpha_test)),
-                                "B_used": int(test.get("B_used", cfg.null_B)),
-                                "decision": str(test.get("decision", "NA")),
-                                "null_mode": str(test.get("null_mode", "mc")),
-                            }
-                        ]),
+                        "stage1_test_report_df": pd.DataFrame([{
+                            "tier": tier,
+                            "K": int(K_rule),
+                            "S_obs": float(test.get("S_obs", np.nan)),
+                            "critical_value": float(test.get("critical_value", np.nan)),
+                            "p_value_mc": float(test.get("p_value_mc", np.nan)),
+                            "alpha": float(test.get("alpha", cfg.alpha_test)),
+                            "B_used": int(test.get("B_used", cfg.null_B)),
+                            "decision": str(test.get("decision", "NA")),
+                            "null_mode": str(test.get("null_mode", "permute_treat")),
+                        }]),
                         "stage1_null_scores": test.get("null_scores", np.asarray([0.0])),
                         "softmax_qc_df": softmax_qc_df,
                         "size_power_table_df": sp,
@@ -350,8 +395,6 @@ def run_paper_pipeline(args: argparse.Namespace) -> str:
                 bundle = _placeholder_bundle(tier, reason=f"testify error: {_tb1(ex)}")
 
             save_testification_bundle(bundle, exp_root, tier_dir)
-
-    return exp_root
 
 
 def main(argv: List[str] | None = None) -> None:
