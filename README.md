@@ -124,5 +124,3 @@ If you later need a very specific model (e.g., nested logit, continuous state, C
 
 ---
 
-## License
-MIT
